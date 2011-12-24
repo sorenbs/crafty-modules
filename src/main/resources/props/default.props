@@ -1,0 +1,3 @@
+mongodb.url = localhost
+mongodb.db = crafty-modules
+mongodb.port 27017
