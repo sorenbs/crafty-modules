@@ -42,6 +42,8 @@ libraryDependencies ++= Seq(
   "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
   "com.h2database" % "h2" % "1.2.138",                                      // In-process database, useful for development systems
   "ch.qos.logback" % "logback-classic" % "0.9.26" % "compile->default",     // Logging
-  "org.eclipse.jgit" % "org.eclipse.jgit.pgm" % "1.1.0.201109151100-r",
-  "commons-io" % "commons-io" % "2.1"
+  "org.eclipse.jgit" % "org.eclipse.jgit.pgm" % "1.1.0.201109151100-r",		// Git api
+  "commons-io" % "commons-io" % "2.1",										// File utils
+  "com.yahoo.platform.yui" % "yuicompressor" % "2.4.6",						// Js compressor
+  "net.java.dev.jets3t" % "jets3t" % "0.8.1"								// S3
 )
