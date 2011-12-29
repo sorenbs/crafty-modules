@@ -10,7 +10,6 @@ import code.lib._
 import Helpers._
 
 class HelloWorld {
-  val a = code.model.Module.createRecord.name("CoolModule").version("0.0.2").save
 
   lazy val date: Box[Date] = DependencyFactory.inject[Date] // inject the date
 

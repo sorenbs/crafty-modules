@@ -14,29 +14,59 @@ import java.io.StringReader
 import java.io.OutputStreamWriter
 import org.apache.commons.io.output.ByteArrayOutputStream
 import org.jets3t.service._
-
-case class packageJSON(files: List[String])
 import net.iharder
+import org.jets3t.service.security.AWSCredentials
+import org.jets3t.service.impl.rest.httpclient.RestS3Service
+import org.jets3t.service.model.S3Object
+import com.foursquare.rogue.Rogue._
+
+case class Person(name:String, url:Option[String], email:Option[String])
+case class License(`type`:String, url:Option[String])
+case class packageJSON(
+    files: List[String], 
+    version:String, 
+    name:String, 
+    title:Option[String], 
+    description:Option[String], 
+    author:Option[Person], 
+    contributors:List[Person], 
+    licenses:List[License], 
+    keywords: List[String], 
+    dependencies:Map[String,String],
+    homepage:Option[String])
+
 object Git {
 	implicit val formats = DefaultFormats // Brings in default date formats etc.
 	
 	def fetch(uri:String) = {
 	  var status = "OK"
 	  try {
+		  // Delete old and download new
 		  val dir = "repos/" + uri.split("/").last
 		  FileUtils.deleteDirectory(new File(dir))
-		  
 		  downloadRepo(dir, uri)
 		  
+		  // Extract package description
 		  val packagejson = new File(dir + "/package.json")
 		  if(!packagejson.exists()) 
-		    status = "No package.json"
+		    status = "No package.json"		  
+	      val packageDescription = parse(FileUtils.readFileToString(packagejson)).extract[packageJSON]
 		  
-		  val packageDescription = parse(FileUtils.readFileToString(packagejson)).extract[packageJSON]
+		  // Combine and compress
 		  val combined = packageDescription.files.foldLeft("") {(combined, n) 
 		    => combined + handleEncodingWeirdness(FileUtils.readFileToString(new File(dir + "/" + n))) + " "}
+		  val compressed = compress(combined)
 		  
-		  println (compress(combined))
+		  // Upload
+		  val oldVersion = code.model.Module where (_.repository eqs uri) get() map(existingModule =>
+		  	filenamesForVersion(packageDescription.name, packageDescription.version, existingModule.version.is).foreach(filename => upload(filename, compressed)))
+		  
+		  println("SAVE")
+		  		  println("SAVE")
+		  
+		  // Save meta data
+		  saveMetaData(packageDescription, uri)
+		  
 	  } catch {
 	  	case e => if(status == "OK") status = "Error: " + e.getMessage()
 	  }
@@ -105,7 +135,45 @@ object Git {
 	  str.toString()
 	}
 	
-	def upload = {
-//	  val AWSCredentials = new AWSCredentials()
+	def upload(key:String, content: String) = {
+	  val AWSCredentials = new AWSCredentials(System.getenv("AWSsecret"), System.getenv("AWSapi"))
+	  val s3Service = new RestS3Service(AWSCredentials)
+	  val bucket = s3Service.getBucket("cdn.crafty-modules.com")
+	  val moduleObj = new S3Object(bucket, key, content)
+	  s3Service.putObject(bucket, moduleObj)
+	}
+	
+	def filenamesForVersion(name:String, version:String, oldVersion:String) = {
+	  
+	  var filenames = List[String]()
+	  filenames ::= name + "-" + version + ".js"
+	  if(version.contains("."))
+		  filenames ::= name + "-" + version.substring(0,version.lastIndexOf(".")) + "x.js"
+	  filenames ::= name + "-DEV.js"
+	  if(version != oldVersion)
+		  filenames ::= name + "-RELEASE.js"
+	  filenames
+	}
+	
+	def saveMetaData(desc:packageJSON, repo:String) = {
+	  val query = code.model.Module where (_.repository eqs repo)
+	  query.findAndDeleteOne()
+	  
+	  code.model.Module.createRecord
+	  	.name(desc.name)
+	  	.version(desc.version)
+	  	.repository(repo)
+	  	.description(desc.description.getOrElse(""))
+	  	.author(desc.author match { 
+	  	  case Some(p:Person) => code.model.PersonBson.createRecord.name(p.name).email(p.email.getOrElse("")).url(p.url.getOrElse(""))
+	  	  case _ => code.model.PersonBson.createRecord.name("").email("").url("")
+	  	  })
+	  	.files(desc.files)
+	  	.homepage(desc.homepage.getOrElse(""))
+	  	.keywords(desc.keywords)
+	  	.licenses(desc.licenses.map(l => code.model.LicenseBson.createRecord.licenseType(l.`type`).url(l.url)))
+	  	.title(desc.title)
+	  	.save
+	  
 	}
 }

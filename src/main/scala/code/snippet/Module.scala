@@ -12,11 +12,11 @@ class Module {
 	def list = {
 	  code.backend.Git.fetch("git@github.com:sorenbs/MoveTo.git")
 
-    ".module_row *" #>
-      Module.findAll.map(m =>
-        "h2 *" #> m.name &
-        ".version *" #> m.version &
-        ClearClearable)
+	  ".module_row *" #>
+      	Module.findAll.map(m =>
+  			"h2 *" #> m.name &
+  			".version *" #> m.version &
+  			ClearClearable)
   }
 }
 
