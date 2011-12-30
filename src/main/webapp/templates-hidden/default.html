@@ -1,85 +1,58 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:lift="http://liftweb.net/">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
-    <title class="lift:Menu.title">App: </title>
-    <style class="lift:CSS.blueprint"></style>
-    <style class="lift:CSS.fancyType"></style>
-    <script id="jquery" src="/classpath/jquery.js" type="text/javascript"></script>
-    <script id="json" src="/classpath/json.js" type="text/javascript"></script>
-    <style type="text/css">
-/* <![CDATA[ */
-.edit_error_class {
-  display: block;
-  color: red;
-}
-
-.sidebar ul {
-	margin:0;
-	padding:0;
-	border-bottom:1px solid #ccc;
-}
-	 
-
-.sidebar ul li {
-	margin:0;
-	padding:0;
-	list-style:none;
-	border:1px solid #ccc;
-	border-bottom:none;
-}
-
-.sidebar ul li a {
-	display:block;
-	padding:3px;
-	text-indent:30px;
-	text-decoration:none;
-}
-
-.sidebar ul li span {
-	display:block;
-	padding:3px;
-	text-indent:30px;
-	text-decoration:none;
-}
-
-.sidebar ul li a:hover {
-	background-color: #eee;
-}
-
-
-  /* ]]> */
-  </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="column span-12 last" style="text-align: right">
-        <h1 class="alt">app<img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"></h1>
-      </div>
-
-      <hr>
-
-      <div class="column span-6 colborder sidebar">
-        <hr class="space" >
-
-	<span class="lift:Menu.builder"></span>
-
-        <div class="lift:Msgs?showAll=true"></div>
-        <hr class="space" />
-      </div>
-
-      <div class="column span-17 last">
-        <div id="content">The main content will get bound here</div>
-      </div>
-
-      <hr />
-      <div class="column span-23 last" style="text-align: center">
-        <h4 class="alt">
-          <a href="http://www.liftweb.net"><i>Lift</i></a> 
-	  is Copyright 2007-2011 WorldWide Conferencing, LLC.
-	  Distributed under an Apache 2.0 License.</h4>
-      </div>
-    </div>
-  </body>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<title class="lift:Menu.title">App: </title>
+	<script id="Script1" src="/classpath/jquery.js" type="text/javascript"></script>
+	<script id="Script2" src="/classpath/json.js" type="text/javascript"></script>
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>    <![endif]-->
+	<!-- Le styles -->
+	<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<style type="text/css">
+		/* <![CDATA[ */
+		body
+		{
+			padding-top: 60px;
+		}
+		/* ]]> */
+	</style>
+	<!-- Le fav and touch icons -->
+	<link rel="shortcut icon" href="images/favicon.ico">
+	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+</head>
+<body>
+	<div class="topbar">
+		<div class="fill">
+			<div class="container">
+				<a class="brand" href="/">Crafty-modules</a>
+				
+				<div class="lift:menu.builder?li:class=menu_item;li_item:class=active;ul:class=nav;linkToSelf=true" />
+				
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="lift:Msgs?showAll=true">
+		</div>
+		<!-- Main hero unit for a primary marketing message or call to action -->
+		<div id="content">
+			<h1>
+				Hello, world!</h1>
+			<p>
+				Vestibulum id ligula porta felis euismod semper. Integer posuere erat a ante venenatis
+				dapibus posuere velit aliquet. Duis mollis, est non commodo luctus, nisi erat porttitor
+				ligula, eget lacinia odio sem nec elit.</p>
+			<p>
+		</div>
+		<footer>
+			<p>
+				&copy; Crafty-modules</p>
+		</footer>
+	</div>
+</body>
 </html>

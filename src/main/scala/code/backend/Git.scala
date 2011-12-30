@@ -144,14 +144,14 @@ object Git {
 	}
 	
 	def filenamesForVersion(name:String, version:String, oldVersion:String) = {
-	  
+	  val namel = name.toLowerCase()
 	  var filenames = List[String]()
-	  filenames ::= name + "-" + version + ".js"
+	  filenames ::= namel + "-" + version + ".js"
 	  if(version.contains("."))
-		  filenames ::= name + "-" + version.substring(0,version.lastIndexOf(".")) + "x.js"
-	  filenames ::= name + "-DEV.js"
+		  filenames ::= namel + "-" + version.substring(0,version.lastIndexOf(".")) + "x.js"
+	  filenames ::= namel + "-DEV.js"
 	  if(version != oldVersion)
-		  filenames ::= name + "-RELEASE.js"
+		  filenames ::= namel + "-RELEASE.js"
 	  filenames
 	}
 	
