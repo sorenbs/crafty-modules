@@ -10,7 +10,7 @@ object JettyLauncher extends Application {
   val DefaultDispatcherTypes: EnumSet[DispatcherType] = 
     EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC)
 
-  val port = if(System.getenv("PORT") != null) System.getenv("PORT").toInt else 8080
+  val port = 8080// if(System.getenv("PORT") != null) System.getenv("PORT").toInt else 8080
   val server = new Server
   val scc = new SelectChannelConnector
   scc.setPort(port)
