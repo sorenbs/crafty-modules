@@ -1,62 +1,73 @@
 ﻿<!DOCTYPE html>
 <html>
-  <head_merge>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
-	<link href="static/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
-	<script type="text/javascript" src="static/google-code-prettify/prettify.js"></script>
-  </head_merge>
   <body class="lift:content_id=main">
     <div id="main" class="lift:surround?with=default;at=content">
 	<head_merge>
-		<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
-		<link href="static/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
-		<script type="text/javascript" src="static/google-code-prettify/prettify.js"></script>
-		<script src="static/jquery/jquery.tablesorter.min.js"></script>
-
+		<link href="/static/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
+		<script type="text/javascript" src="/static/google-code-prettify/prettify.js"></script>
 	</head_merge>
+
     <div class="hero-unit">
-		<p>Crafty-modules is a package manager for the Crafty game engine. It is the preferred way to share, find and use components and other Crafty extensions.</p>
-		<h2>Using a module in your game</h2>
-		<div class="spacing"></div>
+		<h2>Submitting a module</h2>
 		<div class="row">
-			<div class="span-two-thirds" style="width:500px">
-				<pre class="prettyprint lang-js">
-Crafty.modules({ moveto: 'DEV' }, function () {
-    //module is ready
-    Crafty.e("MoveTo, 2D, DOM");
-});
-				</pre>
-				
+			<div class="span-one-third" style="width:260px">
+				<h3>what</h3>
+				<p>A module is a piece of functionality to be used in a game. It can be a <a href="http://craftyjs.com/api/Crafty-c.html">Crafty component</a> or any arbitrary javascript.</p>
 			</div>
-			<div class="span-one-third">
-				<p>The module is downloaded asynchroneously at runtime.</p>
-				<a href="/about" class="btn primary large">read documentation »</a>
+			<div class="span-one-third" style="width:260px">
+				<h3>how</h3>
+				<p>Create and test the functionality locally. When you are ready, create a <a href="http://help.github.com/">github repository</a> and add a Post-Receive URL.</p>
+			</div>
+			<div class="span-one-third" style="width:260px">
+				<h3>submit</h3>
+				<p>Create a package.json file that specifies the module. Push all files to github and go find your module on the <a href="/">browse page</a>.</p>
 			</div>
 		</div>
     </div>
-		  
 
-		  <script >
-		  	$(function () {
-		  		$("table#modules").tablesorter({ sortList: [[0, 0]] });
-		  	});
-		</script>
-		<table id="modules" class="zebra-striped">
-			<thead>
-				<tr>
-					<th>name</th>
-					<th>description</th>
-					<th>keywords</th>
-				</tr>
-			</thead>
-			<tbody class ="lift:Module.list">
-				<tr class="module_row">
-					<td class ="name">name</td>
-					<td class ="description">description</td>
-					<td class ="keywords">keywords</td>
-				</tr>
-			</tbody>
-		</table>
+		<h3>Post-Receive URL</h3>
+		<p>When you add a Post-Receive URL to github a crafty-modules webservice is called every time you push changes to github. This way we can keep the distributed source of your module up to date.</p>
+		<p>The url you should add is http://crafty-modules.com/_update</p>
+		<img src="/static/images/admin.png" />
+		<br /><br />
+		<img style="width:528px" src="/static/images/hook.png" />
+		<p>More technical info on <a href="http://help.github.com/post-receive-hooks/">github:help</a></p>
+		<h3>package.json</h3>
+		<p>The purpose of this file is to specify meta data for your module. Version and name are the only required fields, but you are encouraged to provide useful documentation. The format is inspired by the new <a href="https://github.com/jquery/plugins.jquery.com/blob/master/docs/package.md">jquery plugin system</a> and extended a bit.</p>
+		<pre class="prettyprint lang-js">
+{
+    "name": "MoveTo",
+    "version": "1.3",
+    "title": "Move entity towards mouse",
+    "author": {
+        "name": "Søren Bramer Schmidt",
+        "url": "https://github.com/sorenbs"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://www.opensource.org/licenses/mit-license.php"
+        }
+    ],
+    "dependencies": {
+        "Craftty": ">0.4"
+    },
+    "description": "The mouse equivalent of Fourway. Click and the entity will move toward the point. NewDirection event will be triggered",
+	"jsfiddle": "http://jsfiddle.net/j7uCh/1/embedded/",
+    "keywords": [
+        "mouse",
+        "move"
+    ],
+    "homepage": "https://github.com/sorenbs/MoveTo",
+    "files": [
+        "moveto.js"
+    ]
+}
+		</pre>
+
+		<h3>stuck?</h3>
+		<p>If something is not working or your git-fu is lacking you can have a look at the <a href="/documentation">documentation</a> or ask for help in the <a href="https://groups.google.com/forum/#!forum/craftyjs">crafty forum</a>.</p>
+		  
     </div>
   </body>
 </html>

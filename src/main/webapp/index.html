@@ -1,63 +1,70 @@
 ﻿<!DOCTYPE html>
 <html>
-  <head_merge>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
-	<link href="static/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
-	<script type="text/javascript" src="static/google-code-prettify/prettify.js"></script>
-  </head_merge>
-  <body class="lift:content_id=main">
-    <div id="main" class="lift:surround?with=default;at=content">
-	<head_merge>
-		<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
-		<link href="static/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
-		<script type="text/javascript" src="static/google-code-prettify/prettify.js"></script>
-		<script src="static/jquery/jquery.tablesorter.min.js"></script>
+<body class="lift:content_id=main">
+	<div id="main" class="lift:surround?with=default;at=content">
+		<head_merge>
+			<link href="/static/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
+			<script type="text/javascript" src="/static/google-code-prettify/prettify.js"></script>
+			<script src="/static/jquery/jquery.tablesorter.min.js"></script>
+		</head_merge>
 
-	</head_merge>
-    <div class="hero-unit">
-		<p>Crafty-modules is a package manager for the Crafty game engine. It is the preferred way to share, find and use components and other Crafty extensions.</p>
-		<h2>Using a module in your game</h2>
-		<div class="spacing"></div>
-		<div class="row">
-			<div class="span-two-thirds" style="width:500px">
-				<pre class="prettyprint lang-js">
+		<div class="hero-unit">
+			<p>
+				Crafty-modules is a package manager for the Crafty game engine. It is the preferred
+				way to share, find and use components and other Crafty extensions.</p>
+			<h2>
+				Using a module in your game</h2>
+			<div class="spacing">
+			</div>
+			<div class="row">
+				<div class="span-two-thirds" style="width: 500px">
+					<pre class="prettyprint lang-js">
 Crafty.modules({ moveto: 'DEV' }, function () {
     //module is ready
     Crafty.e("MoveTo, 2D, DOM");
 });
 				</pre>
-				
-			</div>
-			<div class="span-one-third">
-				<p>The module is downloaded asynchroneously at runtime.</p>
-				<a href="/about" class="btn primary large">read documentation »</a>
+				</div>
+				<div class="span-one-third">
+					<p>
+						The module is downloaded asynchroneously at runtime.</p>
+					<a href="/documentation" class="btn primary large">read documentation »</a>
+				</div>
 			</div>
 		</div>
-    </div>
-		  
-
-		  <script >
-		  	$(function () {
-		  		$("table#modules").tablesorter({ sortList: [[0, 0]] });
-		  	});
-		</script>
+		<script>
+			$(function () {
+				$("table#modules").tablesorter({ sortList: [[0, 0]] });
+			});
+</script>
 		<table id="modules" class="zebra-striped">
 			<thead>
 				<tr>
-					<th>name</th>
-					<th>description</th>
-					<th>keywords</th>
+					<th>
+						name
+					</th>
+					<th>
+						description
+					</th>
+					<th>
+						keywords
+					</th>
 				</tr>
 			</thead>
-			<tbody class ="lift:Module.list">
+			<tbody class="lift:Modules.list">
 				<tr class="module_row">
-					<td class ="name">name</td>
-					<td class ="description">description</td>
-					<td class ="keywords">keywords</td>
+					<td>
+						<a class="name" href="/module/name">name</a>
+					</td>
+					<td class="description">
+						description
+					</td>
+					<td class="keywords">
+						keywords
+					</td>
 				</tr>
 			</tbody>
 		</table>
-    </div>
-  </body>
+	</div>
+</body>
 </html>
-

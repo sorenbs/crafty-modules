@@ -13,12 +13,13 @@ import Loc._
 import mapper._
 
 import code.model._
-
+import code.snippet.ParamInfo
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
+
 class Boot {
   def boot {
     MongoDB.defineDb(DefaultMongoIdentifier, MongoAddress(MongoHost(
@@ -26,20 +27,17 @@ class Boot {
       Props.getInt("mongodb.port") openOr 27177),
       Props.get("mongodb.db") openOr  "crafty-modules"))
 
-    val a = Module.createRecord.name("tada").version("2e2e2e")
-    println(a.name)
-    println(Module count)
-    println("AAA")
-
-
+      Module where (_.name eqs "aaa")
+      
     // where to search snippet
     LiftRules.addToPackages("code")
 
     // Build SiteMap
     def sitemap = SiteMap(
+      Menu.param[ParamInfo]("module","module", s => Full(ParamInfo(s)), pi => pi.param) / "module",
       Menu.i("Browse") / "index",
       Menu.i("Submit") / "submit",
-      Menu.i("About") / "about",
+      Menu.i("Documentation") / "documentation",
       //Menu.i("Home") / "index" >> User.AddUserMenusAfter, // the simple way to declare a menu
 
       // more complex because this menu allows anything in the

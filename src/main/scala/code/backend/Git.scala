@@ -27,7 +27,8 @@ case class packageJSON(
     version:String, 
     name:String, 
     title:Option[String], 
-    description:Option[String], 
+    description:Option[String],
+    jsfiddle:Option[String],
     author:Option[Person], 
     contributors:List[Person], 
     licenses:List[License], 
@@ -60,10 +61,8 @@ object Git {
 		  // Upload
 		  val oldVersion = code.model.Module where (_.repository eqs uri) get() map(existingModule =>
 		  	filenamesForVersion(packageDescription.name, packageDescription.version, existingModule.version.is).foreach(filename => upload(filename, compressed)))
-		  
-		  println("SAVE")
-		  		  println("SAVE")
-		  
+		  upload(filenameForVersion(packageDescription.name, "DEBUG"), combined)
+		  	
 		  // Save meta data
 		  saveMetaData(packageDescription, uri)
 		  
@@ -144,15 +143,19 @@ object Git {
 	}
 	
 	def filenamesForVersion(name:String, version:String, oldVersion:String) = {
-	  val namel = name.toLowerCase()
 	  var filenames = List[String]()
-	  filenames ::= namel + "-" + version + ".js"
+	  filenames ::= filenameForVersion(name, version)
 	  if(version.contains("."))
-		  filenames ::= namel + "-" + version.substring(0,version.lastIndexOf(".")) + "x.js"
-	  filenames ::= namel + "-DEV.js"
+		  filenames ::= filenameForVersion(name, version.substring(0,version.lastIndexOf(".")))
+	  filenames ::= filenameForVersion(name, "DEV")
 	  if(version != oldVersion)
-		  filenames ::= namel + "-RELEASE.js"
+		  filenames ::= filenameForVersion(name, "RELEASE")
+		  
 	  filenames
+	}
+	
+	def filenameForVersion(name: String, version: String) = {
+	  "%s-%s.js".format(name.toLowerCase(), version)
 	}
 	
 	def saveMetaData(desc:packageJSON, repo:String) = {
@@ -164,6 +167,7 @@ object Git {
 	  	.version(desc.version)
 	  	.repository(repo)
 	  	.description(desc.description.getOrElse(""))
+	  	.jsfiddle(desc.jsfiddle.getOrElse(""))
 	  	.author(desc.author match { 
 	  	  case Some(p:Person) => code.model.PersonBson.createRecord.name(p.name).email(p.email.getOrElse("")).url(p.url.getOrElse(""))
 	  	  case _ => code.model.PersonBson.createRecord.name("").email("").url("")

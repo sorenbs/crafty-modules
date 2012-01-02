@@ -13,6 +13,7 @@ class Module extends MongoRecord[Module] with MongoId[Module] {
   object name extends StringField(this,255)
   object version extends StringField(this,255)
   object description extends StringField(this,4100)
+  object jsfiddle extends StringField(this,512)
   object files extends MongoListField[Module, String](this)
   object title extends StringField(this, 255)
   object author extends BsonRecordField(this,PersonBson)
