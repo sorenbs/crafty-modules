@@ -1,1 +1,1 @@
-web: target/start container:start
+web: target/start JettyLauncher

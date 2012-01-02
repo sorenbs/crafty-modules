@@ -35,7 +35,11 @@ libraryDependencies ++= {
     "net.liftweb" %% "lift-mapper" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-wizard" % liftVersion % "compile->default",
     "com.foursquare" %% "rogue"               % "1.0.28" intransitive(),
-    "net.liftweb" %% "lift-mongodb-record" % liftVersion % "compile->default")
+    "net.liftweb" %% "lift-mongodb-record" % liftVersion % "compile->default",
+    "org.eclipse.jetty" % "jetty-server" % "8.0.4.v20111024" % "compile->default",
+    "org.eclipse.jetty" % "jetty-servlet" % "8.0.4.v20111024" % "compile->default",
+    "org.eclipse.jetty" % "jetty-webapp" % "8.0.4.v20111024" % "compile->default"
+    )
 }
 
 // when using the sbt web app plugin 0.2.4+, use "container" instead of "jetty" for the context
