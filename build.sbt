@@ -1,6 +1,13 @@
+import com.typesafe.startscript.StartScriptPlugin
+
 name := "crafty-modules"
  
 scalaVersion := "2.9.1"
+
+
+
+seq(StartScriptPlugin.startScriptForClassesSettings: _*)
+
  
 seq(webSettings :_*)
 
