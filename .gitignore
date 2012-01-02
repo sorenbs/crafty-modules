@@ -1,4 +1,4 @@
-
+repos/*
 .idea_modules/*
 project/target/*
 project/project/target/*
