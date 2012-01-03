@@ -22,11 +22,11 @@ import code.snippet.ParamInfo
 
 class Boot {
   def boot {
-    MongoDB.defineDb(DefaultMongoIdentifier, MongoAddress(MongoHost(
+/*    MongoDB.defineDb(DefaultMongoIdentifier, MongoAddress(MongoHost(
       Props.get("mongodb.url") openOr "localhost",
       Props.getInt("mongodb.port") openOr 27177),
       Props.get("mongodb.db") openOr  "crafty-modules"))
-
+*/
       Module where (_.name eqs "aaa")
       
     // where to search snippet
