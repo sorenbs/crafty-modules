@@ -80,7 +80,9 @@ class Boot {
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))    
 
-    // Make a transaction span the whole HTTP request
-    //S.addAround(DB.buildLoanWrapper)
-  }
+      LiftRules.dispatch.append {
+	    //Accept github post-comit webhooks
+      	case Req("_update" :: Nil, _, _) =>
+      	  () => code.backend.Webhook.process
+    }  }
 }
