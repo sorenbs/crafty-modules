@@ -5,15 +5,16 @@ import com.foursquare.rogue.Rogue._
 import mongodb.{MongoDB, DefaultMongoIdentifier, MongoAddress, MongoHost}
 import util._
 import Helpers._
-
 import common._
 import http._
 import sitemap._
 import Loc._
 import mapper._
-
 import code.model._
 import code.snippet.ParamInfo
+import com.mongodb.Mongo
+import com.mongodb.ServerAddress
+import com.mongodb.MongoOptions
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -22,12 +23,18 @@ import code.snippet.ParamInfo
 
 class Boot {
   def boot {
-/*    MongoDB.defineDb(DefaultMongoIdentifier, MongoAddress(MongoHost(
-      Props.get("mongodb.url") openOr "localhost",
-      Props.getInt("mongodb.port") openOr 27177),
-      Props.get("mongodb.db") openOr  "crafty-modules"))
-*/
-      Module where (_.name eqs "aaa")
+    
+	  val srvr = new ServerAddress(
+	  Props.get("mongodb.url") openOr "localhost",
+	  Props.getInt("mongodb.port") openOr 27177)
+	
+    MongoDB.defineDbAuth(
+        DefaultMongoIdentifier, 
+        new Mongo(srvr), 
+        Props.get("mongodb.db") openOr "crafty-modules",
+        Props.get("mongodb.user") openOr "crafty",
+        Props.get("mongodb.pass") openOr System.getenv("mongodb.pass"))
+
       
     // where to search snippet
     LiftRules.addToPackages("code")

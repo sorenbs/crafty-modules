@@ -19,6 +19,7 @@ import org.jets3t.service.security.AWSCredentials
 import org.jets3t.service.impl.rest.httpclient.RestS3Service
 import org.jets3t.service.model.S3Object
 import com.foursquare.rogue.Rogue._
+import net.liftweb.util.Props
 
 case class Person(name:String, url:Option[String], email:Option[String])
 case class License(`type`:String, url:Option[String])
@@ -135,7 +136,7 @@ object Git {
 	}
 	
 	def upload(key:String, content: String) = {
-	  val AWSCredentials = new AWSCredentials(System.getenv("AWSsecret"), System.getenv("AWSapi"))
+	  val AWSCredentials = new AWSCredentials(Props.get("AWS.api") openOr System.getenv("AWS.api"), Props.get("AWS.secret") openOr System.getenv("AWS.secret"))
 	  val s3Service = new RestS3Service(AWSCredentials)
 	  val bucket = s3Service.getBucket("cdn.crafty-modules.com")
 	  val moduleObj = new S3Object(bucket, key, content)
