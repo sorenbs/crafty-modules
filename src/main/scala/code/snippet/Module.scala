@@ -17,7 +17,7 @@ case class ParamInfo(param: String)
 
 class Modules {
 	def list = {
-	  code.backend.Git.fetch("git@github.com:sorenbs/MoveTo.git")
+	  code.backend.Git.fetch("git://github.com/sorenbs/MoveTo.git")
 
 	  ".module_row *" #>
       	Module.findAll.map(m =>

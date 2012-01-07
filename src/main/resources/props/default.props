@@ -1,3 +1,5 @@
-mongodb.url = uptimehub.com
+mongodb.url = crafty-modules.com
 mongodb.db = crafty-modules
 mongodb.port = 27017
+AWS.secret = 87CNfZzmuWSoybZ4Vpf2iGN9r8Tu6ex5auqTgs0N
+AWS.api = AKIAJ4YCCGRWPLF4KVSA
