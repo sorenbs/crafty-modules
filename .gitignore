@@ -1,3 +1,4 @@
+src/main/resources/props/default.props
 repos/*
 .idea_modules/*
 project/target/*
