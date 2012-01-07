@@ -42,7 +42,7 @@ object Git {
 	
 	def fetch(uri:String) = {
 	  var status = "OK"
-	  try {
+	  //try {
 		  // Delete old and download new
 		  val dir = "repos/" + uri.split("/").last
 		  FileUtils.deleteDirectory(new File(dir))
@@ -67,9 +67,9 @@ object Git {
 		  // Save meta data
 		  saveMetaData(packageDescription, uri)
 		  
-	  } catch {
-	  	case e => if(status == "OK") status = "Error: " + e.getMessage()
-	  }
+	 // } catch {
+	  	//case e => if(status == "OK") status = "Error: " + e.getMessage()
+	  //}
 	  println(status)
 
 	}
