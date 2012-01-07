@@ -59,9 +59,13 @@ object Git {
 		    => combined + handleEncodingWeirdness(FileUtils.readFileToString(new File(dir + "/" + n))) + " "}
 		  val compressed = compress(combined)
 		  
-		  // Upload
-		  val oldVersion = code.model.Module where (_.repository eqs uri) get() map(existingModule =>
-		  	filenamesForVersion(packageDescription.name, packageDescription.version, existingModule.version.is).foreach(filename => upload(filename, compressed)))
+		  // Upload compressed versions
+		  val oldVersion = code.model.Module where (_.repository eqs uri) get() map(
+		      existingModule =>
+		  		filenamesForVersion(packageDescription.name, packageDescription.version, existingModule.version.is).foreach(
+		  		    filename => upload(filename, compressed)))
+		  
+		  // Upload uncompressed for debugging
 		  upload(filenameForVersion(packageDescription.name, "DEBUG"), combined)
 		  	
 		  // Save meta data
@@ -147,7 +151,7 @@ object Git {
 	  var filenames = List[String]()
 	  filenames ::= filenameForVersion(name, version)
 	  if(version.contains("."))
-		  filenames ::= filenameForVersion(name, version.substring(0,version.lastIndexOf(".")))
+		  filenames ::= filenameForVersion(name, version.substring(0,version.lastIndexOf(".")) + ".x")
 	  filenames ::= filenameForVersion(name, "DEV")
 	  if(version != oldVersion)
 		  filenames ::= filenameForVersion(name, "RELEASE")
