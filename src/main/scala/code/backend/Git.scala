@@ -20,6 +20,13 @@ import org.jets3t.service.impl.rest.httpclient.RestS3Service
 import org.jets3t.service.model.S3Object
 import com.foursquare.rogue.Rogue._
 import net.liftweb.util.Props
+import org.apache.commons.io.input.BOMInputStream
+import java.io.FileInputStream
+import org.apache.commons.io.IOUtils
+import net.liftweb.common.Box
+import net.liftweb.common.Full
+import net.liftweb.common.Failure
+import net.liftweb.common.Empty
 
 case class Person(name:String, url:Option[String], email:Option[String])
 case class License(`type`:String, url:Option[String])
@@ -34,7 +41,7 @@ case class packageJSON(
     contributors:List[Person], 
     licenses:List[License], 
     keywords: List[String], 
-    dependencies:Map[String,String],
+    dependencies:Option[Map[String,String]],
     homepage:Option[String])
 
 object Git {
@@ -42,38 +49,51 @@ object Git {
 	
 	def fetch(uri:String) = {
 	  var status = "OK"
-	  //try {
+	  try {
 		  // Delete old and download new
 		  val dir = "repos/" + uri.split("/").last
 		  FileUtils.deleteDirectory(new File(dir))
 		  downloadRepo(dir, uri)
 		  
 		  // Extract package description
-		  val packagejson = new File(dir + "/package.json")
-		  if(!packagejson.exists()) 
+		  val packageFile = new File(dir + "/package.json")
+		  if(!packageFile.exists()) 
 		    status = "No package.json"		  
-	      val packageDescription = parse(FileUtils.readFileToString(packagejson)).extract[packageJSON]
+		  
+		
+		  val packageString = handleEncodingWeirdness(packageFile)
+	      val packageJson = parse(packageString).extract[packageJSON]
 		  
 		  // Combine and compress
-		  val combined = packageDescription.files.foldLeft("") {(combined, n) 
-		    => combined + handleEncodingWeirdness(FileUtils.readFileToString(new File(dir + "/" + n))) + " "}
+		  val combined = packageJson.files.foldLeft("") {(combined, n) 
+		    => combined + handleEncodingWeirdness(new File(dir + "/" + n)) + " "}
+		  
 		  val compressed = compress(combined)
 		  
-		  // Upload compressed versions
-		  val oldVersion = code.model.Module where (_.repository eqs uri) get() map(
-		      existingModule =>
-		  		filenamesForVersion(packageDescription.name, packageDescription.version, existingModule.version.is).foreach(
-		  		    filename => upload(filename, compressed)))
-		  
-		  // Upload uncompressed for debugging
-		  upload(filenameForVersion(packageDescription.name, "DEBUG"), combined)
-		  	
+		  compressed match {
+		    case Full(c) =>
+		      // No syntax errors - Upload all versions
+		      code.model.Module where (_.repository eqs uri) get() map(
+			      existingModule =>
+			  		filenamesForVersion(packageJson.name, packageJson.version, existingModule.version.is).foreach(
+			  		    filename => upload(filename, c)))
+			  upload(filenameForVersion(packageJson.name, "DEBUG"), combined)
+		    
+		    case Failure(m,e,c) =>
+		      // Syntax errors - Upload DEBUG and prepend errors
+		      upload(filenameForVersion(packageJson.name, "DEBUG"), "/*\n The following errors prevented us from minify and upload your files:" + m + "\n*/\n" + combined)
+		    
+		    case Empty =>
+		      // This is unlucky
+		      upload(filenameForVersion(packageJson.name, "DEBUG"), "/*\n An unhandled error caused your compressed files to not be uploaded... \n*/\n" + combined)
+		  }
+			  
 		  // Save meta data
-		  saveMetaData(packageDescription, uri)
+		  saveMetaData(packageJson, uri)
 		  
-	 // } catch {
-	  	//case e => if(status == "OK") status = "Error: " + e.getMessage()
-	  //}
+	  } catch {
+	  	case e => if(status == "OK") status = "Error: " + e.getMessage()
+	  }
 	  println(status)
 
 	}
@@ -97,46 +117,49 @@ object Git {
 	  "function() { " + js + " }()"
 	}
 	
-	//Files downloaded from github with jGit are prepended with some weired characters.
-	// When read as UTF8 as per below they are printed as a single ?
-	//I guess we could handle this in a proper way
-	def handleEncodingWeirdness(content:String): String = {
-	  val utf = new String(content.getBytes(), "UTF8")
-	  if(utf.length() > 0)
-	    utf.slice(1, utf.length())
-	  else
-	    ""
+	// Java does not support UTF8 Byte Order Mark. Gues there is a library for that... 
+	// http://www.rgagnon.com/javadetails/java-handle-utf8-file-with-bom.html
+	def handleEncodingWeirdness(file:File): String = {
+	  IOUtils.toString(new BOMInputStream(new FileInputStream(file)))
 	}
 	
-	def compress(content:String) = {
-	  val compressor = new JavaScriptCompressor(new StringReader(content),
-	      new ErrorReporter() {
-		  	def warning(message:String, sourceName:String, line: Int, lineSource: String, lineOffset:Int) {
-                if (line < 0) {
-                    System.err.println("\n[WARNING] " + message);
-                } else {
-                    System.err.println("\n[WARNING] " + line + ':' + lineOffset + ':' + message);
-                }
-            }
-
-            def error(message:String, sourceName:String, line: Int, lineSource: String, lineOffset:Int) {
-                if (line < 0) {
-                    System.err.println("\n[ERROR] " + message);
-                } else {
-                    System.err.println("\n[ERROR] " + line + ':' + lineOffset + ':' + message);
-                }
-            }
-
-            def runtimeError (message:String, sourceName:String, line: Int, lineSource: String, lineOffset:Int): EvaluatorException = {
-                error(message, sourceName, line, lineSource, lineOffset);
-                new EvaluatorException(message);
-            }
-	  })
-	  val str = new ByteArrayOutputStream()
-	  val out = new OutputStreamWriter(str)
-	  compressor.compress(out, -1, true, false, false, false)
-	  out.flush()
-	  str.toString()
+	def compress(content:String) : Box[String] = {
+	  var errors = ""
+	  try{
+		  
+		  val compressor = new JavaScriptCompressor(new StringReader(content),
+		      new ErrorReporter() {
+			  	def warning(message:String, sourceName:String, line: Int, lineSource: String, lineOffset:Int) {
+	                if (line < 0) {
+	                    errors += ("\n[WARNING] " + message);
+	                } else {
+	                    errors += ("\n[WARNING] " + line + ':' + lineOffset + ':' + message + ':' + lineSource);
+	                }
+	            }
+	
+	            def error(message:String, sourceName:String, line: Int, lineSource: String, lineOffset:Int) {
+	                if (line < 0) {
+	                    errors += ("\n[ERROR] " + message);
+	                } else {
+	                    errors += ("\n[ERROR] " + line + ':' + lineOffset + ':' + message + ':' + lineSource);
+	                }
+	            }
+	
+	            def runtimeError (message:String, sourceName:String, line: Int, lineSource: String, lineOffset:Int): EvaluatorException = {
+	                error(message, sourceName, line, lineSource, lineOffset);
+	                new EvaluatorException(message);
+	            }
+		  })
+	  
+		  val str = new ByteArrayOutputStream()
+		  val out = new OutputStreamWriter(str)
+		  compressor.compress(out, -1, true, false, false, false)
+		  out.flush()
+		  Full(str.toString())
+	  } catch {
+	    case e => Failure(errors, Full(e), Empty)
+	  }
+	  
 	}
 	
 	def upload(key:String, content: String) = {
